@@ -196,17 +196,31 @@ jobs:
 
       - name: Setup Husky
         run: |
-          npm pkg set scripts.prepare="husky"
+          cd ${{ github.event.inputs.repo_name }}
+          
+          # Ensure package.json exists
+          if [ ! -f package.json ]; then
+            echo " package.json not found in $(pwd)"
+            exit 1
+          fi
+
+          # Install husky v9
           npm install husky@9 --save-dev
+
+          # Initialize husky (creates .husky folder)
           npx husky init
 
-          # Add hooks manually
+          # Overwrite hooks manually
           echo "npx commitlint --edit \$1" > .husky/commit-msg
           chmod +x .husky/commit-msg
 
           echo "npx lint-staged" > .husky/pre-commit
           chmod +x .husky/pre-commit
-          
+
+          git add .husky package.json package-lock.json
+          git commit -m "chore: setup husky hooks" || true
+          git push origin main
+
       - name: Push to New Repo
         run: |
           cd ${{ github.event.inputs.repo_name }}
