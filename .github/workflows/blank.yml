@@ -181,6 +181,8 @@ jobs:
             echo " package.json not found in $(pwd)"
             exit 1
           fi
+          git config --global user.email "actions@github.com"
+          git config --global user.name "GitHub Actions Bot"
           # Install husky v9
           npm install husky@9 --save-dev
           # Initialize husky (creates .husky folder)
