@@ -194,32 +194,28 @@ jobs:
           sed -i "s/test55-node-backend/$REPO_NAME/g" docker-compose.yml || true
           sed -i "s/test55-node-backend/$REPO_NAME/g" docker-compose.production.yml || true
 
-      - name: Setup Husky
+      - name: Setup Husky (no .husky folder)
         run: |
           cd ${{ github.event.inputs.repo_name }}
-          
-          # Ensure package.json exists
-          if [ ! -f package.json ]; then
-            echo " package.json not found in $(pwd)"
-            exit 1
-          fi
 
-          # Install husky v9
+          # Install husky as dev dependency
           npm install husky@9 --save-dev
 
-          # Initialize husky (creates .husky folder)
-          npx husky init
+          # Enable Git hooks
+          npx husky install
 
-          # Overwrite hooks manually
-          echo "npx commitlint --edit \$1" > .husky/commit-msg
-          chmod +x .husky/commit-msg
+          # Add commitlint and lint-staged hooks directly
+          npx husky add .husky/commit-msg 'npx commitlint --edit $1'
+          npx husky add .husky/pre-commit 'npx lint-staged'
 
-          echo "npx lint-staged" > .husky/pre-commit
-          chmod +x .husky/pre-commit
-
-          git add .husky package.json package-lock.json
-          git commit -m "chore: setup husky hooks" || true
+          # Commit only package.json + lock file
+          git add package.json package-lock.json
+          git commit -m "[skip ci] chore: setup husky hooks" || true
           git push origin main
+
+          # Create develop branch
+          git checkout -b develop
+          git push origin develop
 
       - name: Push to New Repo
         run: |
