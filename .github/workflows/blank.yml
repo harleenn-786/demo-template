@@ -194,12 +194,19 @@ jobs:
           sed -i "s/test55-node-backend/$REPO_NAME/g" docker-compose.yml || true
           sed -i "s/test55-node-backend/$REPO_NAME/g" docker-compose.production.yml || true
 
-      - name: Setup Husky Hooks
+      - name: Setup Husky
         run: |
-          cd ${{ github.event.inputs.repo_name }}
-          npx husky add .husky/commit-msg 'npx commitlint --edit $1'
-          npx husky add .husky/pre-commit 'npx lint-staged'
+          npm pkg set scripts.prepare="husky"
+          npm install husky@9 --save-dev
+          npx husky init
 
+          # Add hooks manually
+          echo "npx commitlint --edit \$1" > .husky/commit-msg
+          chmod +x .husky/commit-msg
+
+          echo "npx lint-staged" > .husky/pre-commit
+          chmod +x .husky/pre-commit
+          
       - name: Push to New Repo
         run: |
           cd ${{ github.event.inputs.repo_name }}
