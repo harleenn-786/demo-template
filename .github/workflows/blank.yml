@@ -134,7 +134,7 @@ jobs:
       - name: Clone Template Repo
         run: |
           ORG="${ORG}"
-          git clone https://x-access-token:${{ secrets.PAT_TOKEN }}@github.com/$ORG/node-template.git template-repo
+          git clone https://x-access-token:${{ secrets.PAT_TOKEN }}@github.com/$ORG/test55-node-backend.git template-repo
 
       - name: Prepare Yeoman Generator
         run: |
