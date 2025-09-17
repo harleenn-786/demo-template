@@ -190,7 +190,7 @@ jobs:
           chmod +x .husky/commit-msg
           echo "npx lint-staged" > .husky/pre-commit
           chmod +x .husky/pre-commit
-          git add .husky package.json package-lock.json
+          git add package.json package-lock.json
           git commit -m "chore: setup husky hooks" || true
           git push origin main
       - name: Push to New Repo
